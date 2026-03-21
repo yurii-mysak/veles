@@ -1,0 +1,66 @@
+services:
+  # Default brain Neo4j instance
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    environment:
+      NEO4J_AUTH: neo4j/veles_local
+      NEO4J_PLUGINS: '["apoc"]'
+    profiles:
+      - neo4j
+      - all
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Example: Work brain Neo4j instance (uncomment to use)
+  # neo4j-work:
+  #   image: neo4j:5-community
+  #   ports:
+  #     - "7475:7474"
+  #     - "7688:7687"
+  #   volumes:
+  #     - neo4j_work_data:/data
+  #   environment:
+  #     NEO4J_AUTH: neo4j/veles_work
+  #     NEO4J_PLUGINS: '["apoc"]'
+  #   profiles:
+  #     - work
+  #     - all
+
+  # Example: Personal brain Neo4j instance (uncomment to use)
+  # neo4j-personal:
+  #   image: neo4j:5-community
+  #   ports:
+  #     - "7476:7474"
+  #     - "7689:7687"
+  #   volumes:
+  #     - neo4j_personal_data:/data
+  #   environment:
+  #     NEO4J_AUTH: neo4j/veles_personal
+  #     NEO4J_PLUGINS: '["apoc"]'
+  #   profiles:
+  #     - personal
+  #     - all
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    profiles:
+      - ollama
+      - all
+
+volumes:
+  neo4j_data:
+  # neo4j_work_data:
+  # neo4j_personal_data:
+  ollama_data:

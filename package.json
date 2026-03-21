@@ -1,0 +1,42 @@
+{
+  "name": "veles",
+  "version": "0.1.0",
+  "description": "Personal second-brain RAG system backed by Neo4j — named after the Slavic god of wisdom",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "veles": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "setup": "bash scripts/setup.sh",
+    "seed": "tsx scripts/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "@langchain/ollama": "^0.1.0",
+    "@langchain/textsplitters": "^0.1.0",
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "dotenv": "^16.4.0",
+    "neo4j-driver": "^5.27.0",
+    "uuid": "^11.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
