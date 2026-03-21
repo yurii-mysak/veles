@@ -10,6 +10,7 @@ import { registerRelateTool } from "./tools/relate.js";
 import { registerImportTool } from "./tools/import.js";
 import { registerExportTool } from "./tools/export.js";
 import { registerStatsTool } from "./tools/stats.js";
+import { registerBackupTool } from "./tools/backup.js";
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -28,6 +29,7 @@ export function createServer(): McpServer {
   registerImportTool(server);
   registerExportTool(server);
   registerStatsTool(server);
+  registerBackupTool(server);
 
   return server;
 }
