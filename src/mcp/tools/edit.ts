@@ -7,6 +7,7 @@ import { deleteChunksForResource } from "../../models/chunk.js";
 import { embedTexts } from "../../core/embeddings.js";
 import { getSession } from "../../core/neo4j.js";
 import { config } from "../../config.js";
+import { detectTicketPatterns, formatTagsWithTickets } from "../../utils/tickets.js";
 
 const splitter = new MarkdownTextSplitter({
   chunkSize: config.chunking.chunkSize,
@@ -122,6 +123,20 @@ export function registerEditTool(server: McpServer) {
       if (content) changes.push("content (re-chunked and re-embedded)");
       if (tags) changes.push("tags");
 
+      // Detect ticket patterns in updated content
+      if (content) {
+        const detectedTickets = detectTicketPatterns(content);
+        const currentTags = result.tags.map((t: string) => t.toUpperCase());
+        const untaggedTickets = detectedTickets.filter(
+          (t) => !currentTags.includes(t),
+        );
+        if (untaggedTickets.length > 0) {
+          changes.push(
+            `detected ticket references not yet tagged: ${untaggedTickets.join(", ")}`,
+          );
+        }
+      }
+
       return {
         content: [
           {
@@ -130,7 +145,7 @@ export function registerEditTool(server: McpServer) {
               `Resource updated successfully.`,
               `  ID: ${result.id}`,
               `  Title: ${result.title}`,
-              `  Tags: ${result.tags.length > 0 ? result.tags.join(", ") : "(none)"}`,
+              `  Tags: ${formatTagsWithTickets(result.tags)}`,
               `  Updated fields: ${changes.join(", ")}`,
             ].join("\n"),
           },

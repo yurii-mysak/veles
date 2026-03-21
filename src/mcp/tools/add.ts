@@ -6,6 +6,7 @@ import {
   extractFrontmatterTags,
 } from "../../utils/markdown.js";
 import { ingestResource, ingestFile } from "../../core/ingestion.js";
+import { detectTicketPatterns, formatTagsWithTickets } from "../../utils/tickets.js";
 
 export function registerAddTool(server: McpServer) {
   server.tool(
@@ -79,18 +80,31 @@ export function registerAddTool(server: McpServer) {
         });
       }
 
+      // Detect ticket patterns in content
+      const detectedTickets = detectTicketPatterns(textContent);
+      const untaggedTickets = detectedTickets.filter(
+        (t) => !mergedTags.map((tag) => tag.toUpperCase()).includes(t),
+      );
+
+      const lines = [
+        `Resource ingested successfully.`,
+        `  Resource ID: ${result.resourceId}`,
+        `  Title: ${resolvedTitle}`,
+        `  Chunks: ${result.chunkCount}`,
+        `  Tags: ${formatTagsWithTickets(result.tags)}`,
+      ];
+
+      if (untaggedTickets.length > 0) {
+        lines.push(
+          ``,
+          `  Detected ticket references not yet tagged: ${untaggedTickets.join(", ")}`,
+          `  Consider adding them as tags for easier lookup.`,
+        );
+      }
+
       return {
         content: [
-          {
-            type: "text" as const,
-            text: [
-              `Resource ingested successfully.`,
-              `  Resource ID: ${result.resourceId}`,
-              `  Title: ${resolvedTitle}`,
-              `  Chunks: ${result.chunkCount}`,
-              `  Tags: ${result.tags.length > 0 ? result.tags.join(", ") : "(none)"}`,
-            ].join("\n"),
-          },
+          { type: "text" as const, text: lines.join("\n") },
         ],
       };
     },
