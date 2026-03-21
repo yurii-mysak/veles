@@ -1,7 +1,10 @@
 import dotenv from "dotenv";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({ path: resolve(import.meta.dirname, "../.env") });
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({ path: resolve(__dirname, "../.env") });
 
 import { config } from "../src/config.js";
 import { getSession, initializeIndexes, verifyConnectivity } from "../src/core/neo4j.js";
