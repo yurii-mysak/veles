@@ -3,8 +3,8 @@ services:
   neo4j:
     image: neo4j:5-community
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
     volumes:
       - neo4j_data:/data
       - neo4j_import:/var/lib/neo4j/import
@@ -56,7 +56,7 @@ services:
   ollama:
     image: ollama/ollama
     ports:
-      - "11434:11434"
+      - "127.0.0.1:11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     profiles:

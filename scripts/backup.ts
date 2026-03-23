@@ -23,6 +23,12 @@ async function backup() {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   const filename = `veles-backup-${timestamp}.json`;
 
+  const cloudSyncDirs = ["iCloud", "Dropbox", "Google Drive", "OneDrive"];
+  if (cloudSyncDirs.some((d) => output.includes(d))) {
+    console.warn(`WARNING: Output path appears to be inside a cloud-synced folder.`);
+    console.warn(`Backup contains unencrypted graph data and will be uploaded automatically.\n`);
+  }
+
   console.log(`Veles Backup`);
   console.log(`============`);
   console.log(`Brain: ${brain || "default"}`);

@@ -39,7 +39,6 @@ export function registerExportTool(server: McpServer) {
           title: r.title,
           content: r.content,
           type: r.type,
-          source_path: r.sourcePath,
           tags: r.tags,
           collections: r.collections,
           created_at: r.createdAt,
