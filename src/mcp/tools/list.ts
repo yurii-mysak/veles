@@ -26,6 +26,7 @@ export function registerListTool(server: McpServer) {
         .describe("Sort order for results"),
       limit: z
         .number()
+        .int()
         .optional()
         .default(20)
         .describe("Maximum number of results to return"),

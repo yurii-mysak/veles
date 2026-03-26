@@ -1,3 +1,4 @@
+import neo4j from "neo4j-driver";
 import { embedText } from "./embeddings.js";
 import { getSession } from "./neo4j.js";
 
@@ -46,8 +47,8 @@ export async function hybridSearch(
       `,
       {
         embedding: queryEmbedding,
-        topK: limit * 2,
-        limit,
+        topK: neo4j.int(limit * 2),
+        limit: neo4j.int(limit),
       },
     );
 
@@ -80,7 +81,7 @@ export async function hybridSearch(
       ORDER BY score DESC
       LIMIT $limit
       `,
-      { query: options.query, limit },
+      { query: options.query, limit: neo4j.int(limit) },
     );
 
     for (const record of fulltextResults.records) {
@@ -117,7 +118,7 @@ export async function hybridSearch(
         ORDER BY sharedTags DESC
         LIMIT $limit
         `,
-        { ids: topIds, limit: Math.max(3, limit - results.size) },
+        { ids: topIds, limit: neo4j.int(Math.max(3, limit - results.size)) },
       );
 
       for (const record of graphResults.records) {

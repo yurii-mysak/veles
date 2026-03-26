@@ -6,6 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: resolve(__dirname, "../.env") });
 
+import neo4j from "neo4j-driver";
 import { config } from "../src/config.js";
 import { getSession, initializeIndexes, verifyConnectivity } from "../src/core/neo4j.js";
 import { embedTexts } from "../src/core/embeddings.js";
@@ -91,7 +92,7 @@ async function reembed(brain?: string) {
          WHERE c.embedding_model IS NULL OR c.embedding_model <> $model
          RETURN c.id AS id, c.content AS content
          LIMIT $limit`,
-        { model: targetModel, limit: BATCH_SIZE },
+        { model: targetModel, limit: neo4j.int(BATCH_SIZE) },
       );
 
       const chunks = batchResult.records.map((r) => ({

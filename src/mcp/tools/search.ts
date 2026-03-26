@@ -19,6 +19,7 @@ export function registerSearchTool(server: McpServer) {
         .describe("Filter results by collection"),
       limit: z
         .number()
+        .int()
         .optional()
         .default(10)
         .describe("Maximum number of results to return"),

@@ -1,3 +1,4 @@
+import neo4j from "neo4j-driver";
 import { getSession } from "../core/neo4j.js";
 
 export interface Resource {
@@ -105,8 +106,8 @@ export async function listResources(
         tags: options.tags?.map((t) => t.toLowerCase()),
         collection: options.collection,
         type: options.type,
-        offset,
-        limit,
+        offset: neo4j.int(offset),
+        limit: neo4j.int(limit),
       },
     );
 
