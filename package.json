@@ -19,7 +19,8 @@
     "typecheck": "tsc --noEmit",
     "reembed": "tsx scripts/reembed.ts",
     "backup": "tsx scripts/backup.ts",
-    "restore": "tsx scripts/restore.ts"
+    "restore": "tsx scripts/restore.ts",
+    "query": "tsx scripts/query.ts"
   },
   "dependencies": {
     "@langchain/community": "^0.3.0",
