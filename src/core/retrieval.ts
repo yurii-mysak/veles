@@ -37,14 +37,14 @@ export async function hybridSearch(
       YIELD node AS chunk, score
       MATCH (r:Resource)-[:HAS_CHUNK]->(chunk)
       OPTIONAL MATCH (r)-[:TAGGED_WITH]->(t:Tag)
-      WITH r, score, collect(DISTINCT t.name) AS tags
+      WITH r, chunk.content AS chunkContent, score, collect(DISTINCT t.name) AS tags
       ${buildTagFilter(options.tags)}
-      ${buildCollectionFilter(options.collection)}
-      RETURN r.id AS resourceId, r.title AS title, r.content AS content,
+      ${buildCollectionFilter(options.collection, ["chunkContent"])}
+      RETURN r.id AS resourceId, r.title AS title, chunkContent AS content,
              score, tags, r.source_path AS sourcePath
       ORDER BY score DESC
       LIMIT $limit
-      `,
+`,
       {
         embedding: queryEmbedding,
         topK: neo4j.int(limit * 2),
@@ -58,7 +58,7 @@ export async function hybridSearch(
         results.set(id, {
           resourceId: id,
           title: record.get("title") as string,
-          content: truncate(record.get("content") as string, 500),
+          content: record.get("content") as string,
           score: record.get("score") as number,
           tags: record.get("tags") as string[],
           sourcePath: record.get("sourcePath") as string | null,
@@ -152,10 +152,11 @@ function buildTagFilter(tags?: string[]): string {
   return `WHERE any(tag IN tags WHERE tag IN [${tagList}])`;
 }
 
-function buildCollectionFilter(collection?: string): string {
+function buildCollectionFilter(collection?: string, extra: string[] = []): string {
   if (!collection) return "";
+  const extraFields = extra.length > 0 ? ", " + extra.join(", ") : "";
   return `
-    WITH r, score, tags
+    WITH r, score, tags${extraFields}
     MATCH (r)-[:PART_OF]->(col:Collection {name: "${collection}"})
   `;
 }

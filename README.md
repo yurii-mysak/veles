@@ -12,6 +12,7 @@ Veles is an MCP (Model Context Protocol) server that gives Claude Code direct ac
 - **Tagging system** — hierarchical tags with parent/child relationships
 - **Bulk import/export** — ingest entire directories, export as markdown or JSON
 - **Backup & restore** — full database backup/restore via APOC for machine migration
+- **CLI query** — search, list, and read full documents directly from the terminal without Claude
 - **Ticket tagging** — auto-detects ticket patterns (PROJ-1234) and highlights them
 - **Embedding migration** — resumable script for switching embedding models
 - **Local-first** — everything runs on your machine, no cloud dependency
@@ -459,7 +460,8 @@ veles/
 │   ├── seed.ts               # Optional seed data
 │   ├── reembed.ts            # Embedding model migration
 │   ├── backup.ts             # CLI database backup
-│   └── restore.ts            # CLI database restore
+│   ├── restore.ts            # CLI database restore
+│   └── query.ts              # CLI query (search, list, get)
 ├── docker-compose.yml        # Neo4j + Ollama containers
 ├── .env.example              # Configuration template
 └── package.json
@@ -489,6 +491,52 @@ npm run restore -- --input=~/backups/veles-backup-2026-03-20T10-30-00.json
 4. On target: `npm run restore -- --input=/path/to/backup.json`
 
 Backup includes all nodes, relationships, and embedding vectors. Indexes are automatically recreated on restore.
+
+## CLI Query
+
+Query your knowledge base directly from the terminal — no Claude or MCP client required.
+
+```bash
+# Search (hybrid vector + keyword + graph)
+npm run query -- "authentication flow"
+npm run query -- "event sourcing" --tags=architecture --limit=5
+npm run query -- "standup notes" --collection=meetings --brain=work
+
+# Search and fetch full content of every result
+npm run query -- "authentication flow" --full
+npm run query -- "event sourcing" --full --limit=3
+
+# List resources
+npm run query -- --list
+npm run query -- --list --tags=architecture --limit=20
+
+# Get a single resource by ID or exact title
+npm run query -- --get=<resource-id>
+npm run query -- --get="Event Sourcing Patterns"
+```
+
+**Flags (all optional):**
+
+| Flag | Applies to | Description |
+|---|---|---|
+| `--tags=a,b,c` | search, list | Filter by tags (comma-separated) |
+| `--collection=x` | search, list | Filter by collection |
+| `--limit=N` | search, list | Max results (default: 10) |
+| `--brain=name` | all | Brain namespace (default: default) |
+| `--full` | search | Fetch and print the complete document for every result |
+
+**Typical workflow:**
+
+```bash
+# 1. Search to find candidates
+npm run query -- "circuit breaker pattern"
+
+# 2. Get the full document for a specific result
+npm run query -- --get=abc-123
+
+# Or fetch everything at once
+npm run query -- "circuit breaker pattern" --full
+```
 
 ## Embedding Model Migration
 
